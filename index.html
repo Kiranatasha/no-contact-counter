@@ -1,0 +1,1138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050816" />
+  <title>No Contact Counter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050816;
+      --bg-2: #0b1024;
+      --card: rgba(10, 14, 30, 0.78);
+      --card-strong: rgba(14, 18, 39, 0.96);
+      --text: #f3f7ff;
+      --muted: #93a2c7;
+      --line: rgba(151, 171, 255, 0.16);
+      --pink: #ff59d6;
+      --blue: #62b7ff;
+      --purple: #8b5cf6;
+      --green: #49f3c6;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.52);
+      --radius: 28px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(139, 92, 246, 0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(98, 183, 255, 0.18), transparent 25%),
+        radial-gradient(circle at bottom center, rgba(255, 89, 214, 0.12), transparent 35%),
+        linear-gradient(180deg, #040610 0%, #070b18 45%, #050816 100%);
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      width: 26rem;
+      height: 26rem;
+      border-radius: 50%;
+      filter: blur(70px);
+      opacity: 0.22;
+      pointer-events: none;
+      z-index: 0;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+
+    body::before {
+      top: -6rem;
+      left: -5rem;
+      background: rgba(139, 92, 246, 0.9);
+    }
+
+    body::after {
+      right: -6rem;
+      bottom: -7rem;
+      background: rgba(98, 183, 255, 0.8);
+      animation-duration: 18s;
+    }
+
+    @keyframes drift {
+      from { transform: translate3d(0, 0, 0) scale(1); }
+      to { transform: translate3d(18px, 24px, 0) scale(1.08); }
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .shell {
+      width: min(100%, 980px);
+      display: grid;
+      gap: 20px;
+    }
+
+    .screen {
+      display: none;
+      width: 100%;
+      animation: fadeUp 360ms ease both;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .panel {
+      position: relative;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(14, 18, 39, 0.96), rgba(8, 11, 24, 0.84));
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 26%, transparent 70%, rgba(98, 183, 255, 0.07));
+      pointer-events: none;
+    }
+
+    .landing {
+      text-align: center;
+      padding: clamp(28px, 6vw, 64px);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #d5ddff;
+      background: rgba(255, 255, 255, 0.03);
+      font-size: 0.9rem;
+      letter-spacing: 0.02em;
+    }
+
+    h1 {
+      margin: 22px 0 12px;
+      font-size: clamp(3rem, 8vw, 6.4rem);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      text-wrap: balance;
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 32rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 1.6;
+    }
+
+    .subtitle strong {
+      color: var(--text);
+    }
+
+    .primary-btn,
+    .ghost-btn,
+    .pill-btn,
+    .reset-btn,
+    .close-btn {
+      appearance: none;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, border-color 180ms ease, opacity 180ms ease;
+    }
+
+    .primary-btn {
+      margin-top: 30px;
+      padding: 14px 22px;
+      min-width: 180px;
+      border-radius: 16px;
+      color: white;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--purple), var(--blue));
+      box-shadow: 0 18px 40px rgba(91, 112, 255, 0.32), 0 0 30px rgba(255, 89, 214, 0.12);
+    }
+
+    .primary-btn:hover,
+    .ghost-btn:hover,
+    .pill-btn:hover,
+    .reset-btn:hover,
+    .close-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .content-grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+
+    .card {
+      border-radius: calc(var(--radius) - 4px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(8, 12, 28, 0.72);
+      padding: clamp(18px, 3.2vw, 28px);
+    }
+
+    .section-title {
+      margin: 0 0 6px;
+      font-size: 1.1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .section-copy {
+      margin: 0 0 18px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #d5ddff;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1.3fr 1fr 0.7fr;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 16px;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      outline: none;
+      font: inherit;
+    }
+
+    .field input:focus {
+      border-color: rgba(98, 183, 255, 0.55);
+      box-shadow: 0 0 0 4px rgba(98, 183, 255, 0.12);
+    }
+
+    .helper {
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      align-items: center;
+    }
+
+    .ghost-btn {
+      padding: 14px 18px;
+      border-radius: 16px;
+      color: #ebefff;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ghost-btn.secondary {
+      color: #d7def8;
+    }
+
+    .error {
+      min-height: 1.2em;
+      margin-top: 10px;
+      color: #ff9ecf;
+      font-size: 0.92rem;
+    }
+
+    .counter-layout {
+      display: grid;
+      gap: 20px;
+    }
+
+    .counter-hero {
+      padding: clamp(22px, 4vw, 36px);
+      display: grid;
+      gap: 20px;
+    }
+
+    .topline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .live-blob {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(73, 243, 198, 0.1);
+      border: 1px solid rgba(73, 243, 198, 0.28);
+      color: #caffef;
+    }
+
+    .timer-wrap {
+      display: grid;
+      gap: 14px;
+      padding: 18px 0 10px;
+    }
+
+    .timer {
+      font-weight: 800;
+      letter-spacing: -0.06em;
+      line-height: 0.95;
+      font-size: clamp(2.4rem, 7vw, 5.3rem);
+      text-wrap: balance;
+      text-shadow: 0 0 24px rgba(98, 183, 255, 0.16);
+    }
+
+    .timer .days {
+      color: #fff;
+    }
+
+    .timer .clock {
+      color: #d6ddff;
+    }
+
+    .timer-note {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat {
+      position: relative;
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      overflow: hidden;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(1.6rem, 4vw, 2.7rem);
+      letter-spacing: -0.05em;
+    }
+
+    .stat small {
+      color: var(--muted);
+    }
+
+    .stat.current {
+      background: linear-gradient(135deg, rgba(98, 183, 255, 0.16), rgba(139, 92, 246, 0.12));
+      box-shadow: inset 0 0 0 1px rgba(98, 183, 255, 0.2), 0 0 40px rgba(98, 183, 255, 0.12);
+    }
+
+    .stat.best {
+      background: linear-gradient(135deg, rgba(255, 89, 214, 0.14), rgba(73, 243, 198, 0.08));
+    }
+
+    .stat::after {
+      content: "";
+      position: absolute;
+      top: -30px;
+      right: -40px;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.2), transparent 70%);
+      opacity: 0.45;
+      pointer-events: none;
+    }
+
+    .mood {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mood-line {
+      min-height: 2.4em;
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #f1f5ff;
+      font-weight: 500;
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+
+    .mood-line.is-changing {
+      opacity: 0.5;
+      transform: translateY(4px);
+    }
+
+    .button-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pill-btn {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      color: var(--text);
+      text-align: left;
+      font-weight: 500;
+    }
+
+    .pill-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+    }
+
+    .bottom-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .reset-btn {
+      padding: 14px 18px;
+      border-radius: 16px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255, 89, 214, 0.9), rgba(255, 102, 102, 0.84));
+      box-shadow: 0 18px 38px rgba(255, 89, 214, 0.22);
+      font-weight: 700;
+    }
+
+    .mini-link {
+      background: none;
+      color: var(--muted);
+      border: 0;
+      padding: 0;
+      text-decoration: underline;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .floating-reaction {
+      position: fixed;
+      right: 22px;
+      bottom: 20px;
+      z-index: 20;
+      padding: 12px 14px;
+      border-radius: 999px;
+      background: rgba(7, 10, 22, 0.76);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      box-shadow: var(--shadow);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(10px) scale(0.98);
+      transition: opacity 220ms ease, transform 220ms ease;
+    }
+
+    .floating-reaction.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .modal,
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(3, 5, 12, 0.7);
+      backdrop-filter: blur(10px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+
+    .modal.open,
+    .overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card,
+    .overlay-card {
+      width: min(100%, 520px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, rgba(15, 19, 41, 0.98), rgba(8, 11, 24, 0.98));
+      box-shadow: var(--shadow);
+      padding: 24px;
+      position: relative;
+    }
+
+    .modal-card h2,
+    .overlay-card h2 {
+      margin: 0 0 10px;
+      font-size: 1.5rem;
+    }
+
+    .modal-card p,
+    .overlay-card p {
+      margin: 0;
+      color: #e8edff;
+      line-height: 1.6;
+      font-size: 1.05rem;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .close-btn {
+      padding: 12px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+    }
+
+    .overlay-card {
+      text-align: center;
+      max-width: 560px;
+      border: 1px solid rgba(255, 89, 214, 0.2);
+      box-shadow: 0 0 0 1px rgba(255, 89, 214, 0.06), var(--shadow);
+    }
+
+    .overlay-card .big {
+      margin-top: 14px;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      font-weight: 800;
+      letter-spacing: -0.05em;
+    }
+
+    .back-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .spacer {
+      height: 6px;
+    }
+
+    .is-hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 820px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-grid,
+      .stats-grid,
+      .button-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topline,
+      .bottom-row {
+        align-items: flex-start;
+      }
+
+      .app {
+        padding: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section id="landingScreen" class="screen active panel">
+        <div class="landing">
+          <div class="eyebrow">No Contact Counter ✨😭</div>
+          <h1>No Contact Counter</h1>
+          <p id="subtitle" class="subtitle"></p>
+          <button id="startBtn" class="primary-btn" type="button">Start ✨</button>
+        </div>
+      </section>
+
+      <section id="inputScreen" class="screen panel">
+        <div class="card">
+          <h2 class="section-title">When was the last time you had contact? 📵</h2>
+          <p class="section-copy">Tell the truth, babe. We count from the last message, call, DM, or whatever else tried to resurrect the situation. 😤</p>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="contactDate">Date 📅</label>
+              <input id="contactDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="contactTime">Time ⏰</label>
+              <input id="contactTime" type="time" step="60" />
+            </div>
+            <div class="field">
+              <label for="contactSeconds">Seconds 🫠</label>
+              <input id="contactSeconds" type="number" min="0" max="59" inputmode="numeric" placeholder="00" />
+            </div>
+          </div>
+          <div class="helper">Seconds are optional. If you skip them, we assume 00 😌</div>
+          <div id="inputError" class="error" aria-live="polite"></div>
+
+          <div class="actions">
+            <button id="startCountingBtn" class="primary-btn" type="button">Start Counting 🚫</button>
+            <button id="goBackBtn" class="ghost-btn secondary" type="button">Back 🫶</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="counterScreen" class="screen counter-layout">
+        <div class="panel counter-hero">
+          <div class="topline">
+            <div class="live-blob">Live counter <span>•</span> do not fold now 💅</div>
+            <button id="editBtn" class="mini-link" type="button">Edit last contact ✍️</button>
+          </div>
+
+          <div class="timer-wrap">
+            <div id="timer" class="timer" aria-live="polite">
+              <span class="days">0 days</span> <span class="clock">00:00:00</span>
+            </div>
+            <div class="timer-note">This is how long you’ve kept your peace 😭</div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat current">
+              <small>🔥 Current Streak</small>
+              <strong id="currentDays">0</strong>
+              <small>days of self-respect 💅</small>
+            </div>
+            <div class="stat best">
+              <small>🏆 Best Streak</small>
+              <strong id="bestDays">0</strong>
+              <small>saved in localStorage, naturally 🧠</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="content-grid">
+          <div class="card mood">
+            <h2 class="section-title">Mood check 🫶</h2>
+            <div id="motivation" class="mood-line" aria-live="polite"></div>
+            <div class="button-grid">
+              <button class="pill-btn temptation" data-action="text" type="button">I want to text them 📵</button>
+              <button class="pill-btn temptation" data-action="call" type="button">I want to call them 📞</button>
+              <button class="pill-btn temptation" data-action="meet" type="button">I want to meet them 😶‍🌫️</button>
+              <button class="pill-btn temptation" data-action="dm" type="button">I want to reply to their DM 💔</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="section-title">Reset 🚨</h2>
+            <p class="section-copy">If the saga restarted, we reset the clock and keep moving like nothing was ever cute about that 🤡</p>
+            <button id="resetBtn" class="reset-btn" type="button">I broke no contact 😭</button>
+            <div class="spacer"></div>
+            <button id="showInputBtn" class="ghost-btn secondary" type="button">Change the last-contact time ✨</button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div id="reaction" class="floating-reaction" aria-hidden="true"></div>
+
+  <div id="temptationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="temptationTitle" aria-hidden="true">
+    <div class="modal-card">
+      <h2 id="temptationTitle">Pause 😶‍🌫️</h2>
+      <p id="temptationText"></p>
+      <div class="modal-actions">
+        <button id="closeModalBtn" class="close-btn" type="button">Okay 😔</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resetOverlay" class="overlay" aria-hidden="true">
+    <div class="overlay-card">
+      <h2 id="resetTitle">Damn... we start again 😭</h2>
+      <p id="resetText"></p>
+      <div id="resetBig" class="big">0 days 00:00:00</div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      lastContact: "nocontact-last-contact",
+      bestStreak: "nocontact-best-streak"
+    };
+
+    const subtitles = [
+      "Stay strong 😤",
+      "You deserve better 💅",
+      "We're not going back. Remember that 🚫",
+      "Healing era activated ✨"
+    ];
+
+    const motivations = [
+      "You're doing better than you think 🫶",
+      "Don't fold now 😤",
+      "Respect yourself 💅",
+      "Stay in your power ✨"
+    ];
+
+    const temptationResponses = [
+      "Don’t do it. You’ll regret it in 5 minutes 😭",
+      "Be serious right now.",
+      "We’re not embarrassing ourselves today 💅",
+      "You deserve better than this.",
+      "Stand up.",
+      "This is your villain origin story.",
+      "Put the phone down 📵",
+      "You’re better than this, I promise 🫶",
+      "Healing > texting them ✨",
+      "Let’s not do something we’ll cry about later 😭",
+      "You’ve come too far.",
+      "This is a test. Don’t fail.",
+      "You KNOW how this ends 🤡",
+      "Respect yourself. Please.",
+      "Not today 🚫",
+      "We’re choosing peace today ✨",
+      "Be calm. Be classy. Don’t text.",
+      "You miss the idea, not the person.",
+      "Don’t fold now 😤",
+      "This is growth. Stay with it.",
+      "Nobody needs a midnight relapse text 🫠",
+      "If it was for you, it wouldn’t feel this chaotic.",
+      "We are not reopening old wounds 💔",
+      "Your peace called. It said keep going.",
+      "A text is not a personality trait.",
+      "Main character behavior would be ignoring them.",
+      "You already know this is bait.",
+      "Take the L? No. Take a nap instead 😶‍🌫️",
+      "The group chat would not survive this decision.",
+      "Do not let nostalgia gaslight you.",
+      "You are one bad text away from a cringe montage.",
+      "Be so for real right now.",
+      "Your standards deserve better energy.",
+      "That notification is not a sign from the universe.",
+      "Not everything deserves a reply 📵",
+      "Your healing era is not a prank.",
+      "A comeback is cute. A spiral is not.",
+      "We are guarding the peace with our life.",
+      "They can stay in the archives.",
+      "Texting them will not unlock hidden lore.",
+      "You are bigger than the urge.",
+      "This urge is temporary. The embarrassment is forever 😭",
+      "Your future self is begging you not to.",
+      "You are not obligated to be accessible.",
+      "Stay out of the comments section of your own feelings.",
+      "The phone can survive a little neglect.",
+      "Do something that protects your nervous system 🧠",
+      "This is not a reunion episode.",
+      "You are allowed to miss them and still not text.",
+      "The healing arc needs less chaos, actually.",
+      "If you text, we both know the plot twist is pain."
+    ];
+
+    const resetMessages = [
+      "Damn... we start again.",
+      "Character development moment.",
+      "It's okay. Healing isn't linear."
+    ];
+
+    const reactionPings = ["😭", "💅", "✨", "🫶", "no babe", "be serious"];
+
+    const landingScreen = document.getElementById("landingScreen");
+    const inputScreen = document.getElementById("inputScreen");
+    const counterScreen = document.getElementById("counterScreen");
+    const subtitleEl = document.getElementById("subtitle");
+    const timerEl = document.getElementById("timer");
+    const currentDaysEl = document.getElementById("currentDays");
+    const bestDaysEl = document.getElementById("bestDays");
+    const motivationEl = document.getElementById("motivation");
+    const reactionEl = document.getElementById("reaction");
+    const modalEl = document.getElementById("temptationModal");
+    const temptationTextEl = document.getElementById("temptationText");
+    const resetOverlayEl = document.getElementById("resetOverlay");
+    const resetTitleEl = document.getElementById("resetTitle");
+    const resetTextEl = document.getElementById("resetText");
+    const resetBigEl = document.getElementById("resetBig");
+    const inputErrorEl = document.getElementById("inputError");
+
+    const contactDateEl = document.getElementById("contactDate");
+    const contactTimeEl = document.getElementById("contactTime");
+    const contactSecondsEl = document.getElementById("contactSeconds");
+
+    const startBtn = document.getElementById("startBtn");
+    const startCountingBtn = document.getElementById("startCountingBtn");
+    const goBackBtn = document.getElementById("goBackBtn");
+    const editBtn = document.getElementById("editBtn");
+    const showInputBtn = document.getElementById("showInputBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
+
+    let lastContactMs = null;
+    let bestStreakSeconds = 0;
+    let ticker = null;
+    let motivationTicker = null;
+    let activeMotivation = "";
+    let lastTemptationResponse = "";
+    let resetOverlayTimer = null;
+
+    function pickRandom(list, avoidValue = "") {
+      if (list.length === 1) return list[0];
+      let choice = list[Math.floor(Math.random() * list.length)];
+      if (avoidValue && list.length > 1) {
+        while (choice === avoidValue) {
+          choice = list[Math.floor(Math.random() * list.length)];
+        }
+      }
+      return choice;
+    }
+
+    function formatTwo(value) {
+      return String(value).padStart(2, "0");
+    }
+
+    function formatDuration(totalSeconds) {
+      const seconds = Math.max(0, Math.floor(totalSeconds));
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = seconds % 60;
+
+      return {
+        days,
+        hours,
+        minutes,
+        seconds: secs,
+        timeString: `${formatTwo(hours)}:${formatTwo(minutes)}:${formatTwo(secs)}`
+      };
+    }
+
+    function formatDisplay(totalSeconds) {
+      const parts = formatDuration(totalSeconds);
+      return {
+        days: parts.days,
+        text: `${parts.days} days ${parts.timeString}`
+      };
+    }
+
+    function formatLocalDateInput(date) {
+      const pad = (n) => String(n).padStart(2, "0");
+      return {
+        date: [date.getFullYear(), pad(date.getMonth() + 1), pad(date.getDate())].join("-"),
+        time: `${pad(date.getHours())}:${pad(date.getMinutes())}`,
+        seconds: pad(date.getSeconds())
+      };
+    }
+
+    function setScreen(screenName) {
+      for (const screen of [landingScreen, inputScreen, counterScreen]) {
+        screen.classList.remove("active");
+      }
+      if (screenName === "landing") landingScreen.classList.add("active");
+      if (screenName === "input") inputScreen.classList.add("active");
+      if (screenName === "counter") counterScreen.classList.add("active");
+    }
+
+    function saveLastContact(ms) {
+      lastContactMs = ms;
+      localStorage.setItem(STORAGE_KEYS.lastContact, String(ms));
+    }
+
+    function saveBestStreak(seconds) {
+      bestStreakSeconds = Math.max(bestStreakSeconds, seconds);
+      localStorage.setItem(STORAGE_KEYS.bestStreak, String(bestStreakSeconds));
+    }
+
+    function renderTimer() {
+      if (!lastContactMs) return;
+      const now = Date.now();
+      const elapsedSeconds = Math.max(0, Math.floor((now - lastContactMs) / 1000));
+      const display = formatDisplay(elapsedSeconds);
+      const prettyClock = formatDuration(elapsedSeconds);
+      timerEl.innerHTML = `<span class="days">${display.days} days</span> <span class="clock">${prettyClock.timeString}</span>`;
+      currentDaysEl.textContent = String(display.days);
+
+      saveBestStreak(elapsedSeconds);
+      bestDaysEl.textContent = String(formatDisplay(bestStreakSeconds).days);
+      document.title = `${display.days} days - No Contact Counter`;
+    }
+
+    function setMotivation() {
+      const next = pickRandom(motivations, activeMotivation);
+      activeMotivation = next;
+      motivationEl.classList.add("is-changing");
+      motivationEl.textContent = next;
+      window.setTimeout(() => {
+        motivationEl.classList.remove("is-changing");
+      }, 120);
+    }
+
+    function showReaction(text) {
+      reactionEl.textContent = text;
+      reactionEl.classList.add("show");
+      window.clearTimeout(showReaction.timer);
+      showReaction.timer = window.setTimeout(() => {
+        reactionEl.classList.remove("show");
+      }, 1600);
+    }
+
+    function openModal(message) {
+      temptationTextEl.textContent = message;
+      modalEl.classList.add("open");
+      modalEl.setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal() {
+      modalEl.classList.remove("open");
+      modalEl.setAttribute("aria-hidden", "true");
+    }
+
+    function showResetOverlay(message) {
+      resetTitleEl.textContent = message;
+      resetTextEl.textContent = "Take a breath. Healing isn't linear, and starting over is still moving forward.";
+      resetBigEl.textContent = "0 days 00:00:00";
+      resetOverlayEl.classList.add("open");
+      resetOverlayEl.setAttribute("aria-hidden", "false");
+      window.clearTimeout(resetOverlayTimer);
+      resetOverlayTimer = window.setTimeout(() => {
+        resetOverlayEl.classList.remove("open");
+        resetOverlayEl.setAttribute("aria-hidden", "true");
+      }, 1600);
+    }
+
+    function startTicker() {
+      window.clearInterval(ticker);
+      ticker = window.setInterval(renderTimer, 1000);
+      renderTimer();
+    }
+
+    function startMotivationRotation() {
+      setMotivation();
+      window.clearInterval(motivationTicker);
+      motivationTicker = window.setInterval(() => setMotivation(), 12000);
+    }
+
+    function fillInputsFromDate(date) {
+      const formatted = formatLocalDateInput(date);
+      contactDateEl.value = formatted.date;
+      contactTimeEl.value = formatted.time;
+      contactSecondsEl.value = formatted.seconds;
+    }
+
+    function useCurrentDefaults() {
+      fillInputsFromDate(new Date());
+    }
+
+    function loadSavedState() {
+      const storedLast = Number(localStorage.getItem(STORAGE_KEYS.lastContact));
+      const storedBest = Number(localStorage.getItem(STORAGE_KEYS.bestStreak));
+
+      if (Number.isFinite(storedBest) && storedBest >= 0) {
+        bestStreakSeconds = storedBest;
+      }
+
+      if (Number.isFinite(storedLast) && storedLast > 0) {
+        lastContactMs = storedLast;
+        return true;
+      }
+
+      return false;
+    }
+
+    function populateFieldsFromSavedOrNow() {
+      if (lastContactMs) {
+        fillInputsFromDate(new Date(lastContactMs));
+      } else {
+        useCurrentDefaults();
+      }
+    }
+
+    function validateAndBuildDate() {
+      inputErrorEl.textContent = "";
+
+      const dateVal = contactDateEl.value;
+      const timeVal = contactTimeEl.value;
+      const secondsRaw = contactSecondsEl.value.trim();
+      const seconds = secondsRaw === "" ? 0 : Number(secondsRaw);
+
+      if (!dateVal) {
+        inputErrorEl.textContent = "Pick a date first. The delusion starts there.";
+        return null;
+      }
+
+      if (!timeVal) {
+        inputErrorEl.textContent = "Pick a time too. We need the full receipt.";
+        return null;
+      }
+
+      if (!Number.isInteger(seconds) || seconds < 0 || seconds > 59) {
+        inputErrorEl.textContent = "Seconds need to be between 0 and 59.";
+        return null;
+      }
+
+      const [year, month, day] = dateVal.split("-").map(Number);
+      const [hours, minutes] = timeVal.split(":").map(Number);
+      const candidate = new Date(year, month - 1, day, hours, minutes, seconds, 0);
+
+      if (Number.isNaN(candidate.getTime())) {
+        inputErrorEl.textContent = "That date/time combo is not valid.";
+        return null;
+      }
+
+      if (candidate.getTime() > Date.now()) {
+        inputErrorEl.textContent = "That time is in the future. We are not time traveling.";
+        return null;
+      }
+
+      return candidate.getTime();
+    }
+
+    function enterCounterView() {
+      setScreen("counter");
+      startTicker();
+      startMotivationRotation();
+    }
+
+    function startFromInputs() {
+      const selectedMs = validateAndBuildDate();
+      if (selectedMs === null) return;
+      saveLastContact(selectedMs);
+      enterCounterView();
+    }
+
+    function resetToNow() {
+      const now = Date.now();
+      saveLastContact(now);
+      renderTimer();
+      const msg = pickRandom(resetMessages);
+      showResetOverlay(msg);
+      const display = formatDisplay(0);
+      resetBigEl.textContent = display.text;
+      showReaction(pickRandom(reactionPings));
+    }
+
+    function handleTemptation() {
+      const response = pickRandom(temptationResponses, lastTemptationResponse);
+      lastTemptationResponse = response;
+      openModal(response);
+      showReaction(pickRandom(reactionPings));
+    }
+
+    startBtn.addEventListener("click", () => {
+      populateFieldsFromSavedOrNow();
+      setScreen("input");
+    });
+
+    startCountingBtn.addEventListener("click", startFromInputs);
+
+    goBackBtn.addEventListener("click", () => setScreen("landing"));
+
+    editBtn.addEventListener("click", () => {
+      populateFieldsFromSavedOrNow();
+      setScreen("input");
+    });
+
+    showInputBtn.addEventListener("click", () => {
+      populateFieldsFromSavedOrNow();
+      setScreen("input");
+    });
+
+    resetBtn.addEventListener("click", resetToNow);
+
+    closeModalBtn.addEventListener("click", closeModal);
+
+    modalEl.addEventListener("click", (event) => {
+      if (event.target === modalEl) closeModal();
+    });
+
+    resetOverlayEl.addEventListener("click", (event) => {
+      if (event.target === resetOverlayEl) {
+        resetOverlayEl.classList.remove("open");
+        resetOverlayEl.setAttribute("aria-hidden", "true");
+      }
+    });
+
+    document.querySelectorAll(".temptation").forEach((button) => {
+      button.addEventListener("click", handleTemptation);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeModal();
+      }
+    });
+
+    (function init() {
+      subtitleEl.textContent = pickRandom(subtitles);
+      loadSavedState();
+      populateFieldsFromSavedOrNow();
+
+      if (lastContactMs) {
+        enterCounterView();
+      } else {
+        setScreen("landing");
+      }
+    })();
+  </script>
+</body>
+</html>
