@@ -442,6 +442,24 @@
       box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
     }
 
+    .temptation-btn {
+      min-height: 64px;
+    }
+
+    .support-entry {
+      margin-top: 10px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.95), rgba(244, 63, 94, 0.82));
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 14px 30px rgba(124, 58, 237, 0.22), 0 0 26px rgba(244, 63, 94, 0.12);
+      text-align: center;
+      min-height: 58px;
+    }
+
+    .support-entry:hover {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 1), rgba(244, 63, 94, 0.92));
+    }
+
     .bottom-row {
       display: flex;
       flex-wrap: wrap;
@@ -492,7 +510,151 @@
       transform: translateY(0) scale(1);
     }
 
-    .modal,
+    .witty-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%) translateY(10px) scale(0.98);
+      z-index: 25;
+      width: min(92vw, 520px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(8, 11, 24, 0.84);
+      box-shadow: var(--shadow);
+      color: #f5f7ff;
+      padding: 14px 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .witty-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0) scale(1);
+    }
+
+    .witty-toast small {
+      display: block;
+      margin-bottom: 4px;
+      color: #9fb0df;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-size: 0.75rem;
+    }
+
+    .witty-toast strong {
+      font-size: 1rem;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    .support-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 35;
+      display: grid;
+      place-items: center;
+      padding: 20px;
+      background: rgba(10, 8, 18, 0.66);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+
+    .support-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .support-modal-card {
+      width: min(100%, 560px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background:
+        radial-gradient(circle at top left, rgba(255, 188, 205, 0.3), transparent 32%),
+        linear-gradient(180deg, rgba(58, 21, 42, 0.98), rgba(19, 20, 46, 0.98));
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.56), 0 0 0 1px rgba(255, 132, 170, 0.12);
+      padding: 24px;
+      transform: scale(0.985) translateY(10px);
+      opacity: 0;
+      transition: transform 220ms ease, opacity 220ms ease;
+    }
+
+    .support-modal.open .support-modal-card {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .support-modal-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .support-modal-kicker {
+      color: #ffd8e4;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.78rem;
+    }
+
+    .support-modal-title {
+      margin: 0 0 8px;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+    }
+
+    .support-modal-copy {
+      margin: 0 0 18px;
+      color: #f5dfe7;
+      line-height: 1.7;
+    }
+
+    .support-modal-section {
+      padding: 16px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .support-modal-section:first-of-type {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .support-modal-section h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      color: #ffeaf0;
+    }
+
+    .support-modal-section ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #f8edf1;
+      line-height: 1.7;
+    }
+
+    .support-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 18px;
+    }
+
+    .support-modal-close {
+      padding: 13px 17px;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      background: linear-gradient(135deg, rgba(255, 124, 146, 0.96), rgba(155, 88, 255, 0.88));
+      box-shadow: 0 16px 34px rgba(255, 124, 146, 0.2);
+      font: inherit;
+      cursor: pointer;
+    }
+
     .overlay {
       position: fixed;
       inset: 0;
@@ -507,13 +669,11 @@
       transition: opacity 220ms ease;
     }
 
-    .modal.open,
     .overlay.open {
       opacity: 1;
       pointer-events: auto;
     }
 
-    .modal-card,
     .overlay-card {
       width: min(100%, 520px);
       border-radius: 28px;
@@ -524,32 +684,16 @@
       position: relative;
     }
 
-    .modal-card h2,
     .overlay-card h2 {
       margin: 0 0 10px;
       font-size: 1.5rem;
     }
 
-    .modal-card p,
     .overlay-card p {
       margin: 0;
       color: #e8edff;
       line-height: 1.6;
       font-size: 1.05rem;
-    }
-
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 18px;
-    }
-
-    .close-btn {
-      padding: 12px 16px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text);
-      border: 1px solid rgba(255, 255, 255, 0.09);
     }
 
     .overlay-card {
@@ -675,14 +819,16 @@
 
         <div class="content-grid">
           <div class="card mood">
-            <h2 class="section-title">Mood check 🫶</h2>
+            <h2 class="section-title">Need support? 🤍</h2>
             <div id="motivation" class="mood-line" aria-live="polite"></div>
             <div class="button-grid">
-              <button class="pill-btn temptation" data-action="text" type="button">I want to text them 📵</button>
-              <button class="pill-btn temptation" data-action="call" type="button">I want to call them 📞</button>
-              <button class="pill-btn temptation" data-action="meet" type="button">I want to meet them 😶‍🌫️</button>
-              <button class="pill-btn temptation" data-action="dm" type="button">I want to reply to their DM 💔</button>
+              <button class="pill-btn temptation-btn" data-temptation="text" type="button">I want to text them</button>
+              <button class="pill-btn temptation-btn" data-temptation="call" type="button">I want to call them</button>
+              <button class="pill-btn temptation-btn" data-temptation="meet" type="button">I want to meet them</button>
+              <button class="pill-btn temptation-btn" data-temptation="dm" type="button">I want to reply to their DM</button>
             </div>
+            <button class="pill-btn support-entry" id="supportBtn" type="button">I'm not okay right now 💔</button>
+            <div class="helper">Main character mode for the first four. Soft support if you need it.</div>
           </div>
 
           <div class="card">
@@ -694,17 +840,27 @@
           </div>
         </div>
       </section>
+
     </div>
   </main>
 
   <div id="reaction" class="floating-reaction" aria-hidden="true"></div>
+  <div id="wittyToast" class="witty-toast" aria-live="polite" aria-hidden="true">
+    <small>Reality check</small>
+    <strong id="wittyToastText"></strong>
+  </div>
 
-  <div id="temptationModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="temptationTitle" aria-hidden="true">
-    <div class="modal-card">
-      <h2 id="temptationTitle">Pause 😶‍🌫️</h2>
-      <p id="temptationText"></p>
-      <div class="modal-actions">
-        <button id="closeModalBtn" class="close-btn" type="button">Okay 😔</button>
+  <div id="supportModal" class="support-modal" role="dialog" aria-modal="true" aria-labelledby="supportModalTitle" aria-hidden="true">
+    <div class="support-modal-card">
+      <div class="support-modal-top">
+        <div class="support-modal-kicker">Soft space</div>
+        <div class="support-modal-kicker">🫶 🌷 ✨</div>
+      </div>
+      <h2 id="supportModalTitle" class="support-modal-title">Hey… take a breath</h2>
+      <p id="supportModalIntro" class="support-modal-copy">You’re safe here. Let’s slow down together, one step at a time.</p>
+      <div id="supportModalContent"></div>
+      <div class="support-modal-actions">
+        <button id="supportModalClose" class="support-modal-close" type="button">I feel a bit better 🤍</button>
       </div>
     </div>
   </div>
@@ -735,6 +891,51 @@
       "Don't fold now 😤",
       "Respect yourself 💅",
       "Stay in your power ✨"
+    ];
+
+    const supportModalThemes = [
+      {
+        key: "grounding",
+        title: "🌿 Grounding",
+        kicker: "Hey… take a breath",
+        intro: "You’re safe here. Let’s slow down together, one step at a time.",
+        items: [
+          "Name 5 things you can see 👀",
+          "Touch 4 things around you ✋",
+          "Listen to 3 sounds 🎧"
+        ]
+      },
+      {
+        key: "breathing",
+        title: "🌬 Breathing",
+        kicker: "It’s okay to feel this way",
+        intro: "No pressure. Just bring your attention back to your breath.",
+        items: [
+          "Inhale 4s, hold 4s, exhale 6s 🌬",
+          "Slow your breathing for one minute 🫁"
+        ]
+      },
+      {
+        key: "reflection",
+        title: "📝 Reflection",
+        kicker: "You’re safe here",
+        intro: "Let the feeling exist without trying to fix it right away.",
+        items: [
+          "Write down what you’re feeling ✍️",
+          "What do you actually need right now? 💭"
+        ]
+      },
+      {
+        key: "action",
+        title: "🚶‍♀️ Action",
+        kicker: "Take this one step at a time",
+        intro: "A small reset can make the next moment easier.",
+        items: [
+          "Take a short walk 🚶‍♀️",
+          "Drink some water 💧",
+          "Step away from your phone 🌙"
+        ]
+      }
     ];
 
     const temptationResponses = [
@@ -808,8 +1009,12 @@
     const bestDaysEl = document.getElementById("bestDays");
     const motivationEl = document.getElementById("motivation");
     const reactionEl = document.getElementById("reaction");
-    const modalEl = document.getElementById("temptationModal");
-    const temptationTextEl = document.getElementById("temptationText");
+    const wittyToastEl = document.getElementById("wittyToast");
+    const wittyToastTextEl = document.getElementById("wittyToastText");
+    const supportModalEl = document.getElementById("supportModal");
+    const supportModalTitleEl = document.getElementById("supportModalTitle");
+    const supportModalIntroEl = document.getElementById("supportModalIntro");
+    const supportModalContentEl = document.getElementById("supportModalContent");
     const resetOverlayEl = document.getElementById("resetOverlay");
     const resetTitleEl = document.getElementById("resetTitle");
     const resetTextEl = document.getElementById("resetText");
@@ -826,7 +1031,10 @@
     const editBtn = document.getElementById("editBtn");
     const showInputBtn = document.getElementById("showInputBtn");
     const resetBtn = document.getElementById("resetBtn");
-    const closeModalBtn = document.getElementById("closeModalBtn");
+    const supportBtn = document.getElementById("supportBtn");
+    const supportModalCloseBtn = document.getElementById("supportModalClose");
+
+    const temptationButtons = Array.from(document.querySelectorAll("[data-temptation]"));
 
     let lastContactMs = null;
     let bestStreakSeconds = 0;
@@ -834,6 +1042,8 @@
     let motivationTicker = null;
     let activeMotivation = "";
     let lastTemptationResponse = "";
+    let lastSupportThemeKey = "";
+    let wittyToastTimer = null;
     let resetOverlayTimer = null;
 
     function pickRandom(list, avoidValue = "") {
@@ -936,15 +1146,40 @@
       }, 1600);
     }
 
-    function openModal(message) {
-      temptationTextEl.textContent = message;
-      modalEl.classList.add("open");
-      modalEl.setAttribute("aria-hidden", "false");
+    function showWittyToast(message) {
+      wittyToastTextEl.textContent = message;
+      wittyToastEl.classList.add("show");
+      wittyToastEl.setAttribute("aria-hidden", "false");
+      window.clearTimeout(wittyToastTimer);
+      wittyToastTimer = window.setTimeout(() => {
+        wittyToastEl.classList.remove("show");
+        wittyToastEl.setAttribute("aria-hidden", "true");
+      }, 2200);
     }
 
-    function closeModal() {
-      modalEl.classList.remove("open");
-      modalEl.setAttribute("aria-hidden", "true");
+    function showSupportModal() {
+      const theme = pickRandom(supportModalThemes, lastSupportThemeKey);
+      lastSupportThemeKey = theme.key;
+      supportModalTitleEl.textContent = theme.kicker;
+      supportModalIntroEl.textContent = theme.intro;
+      supportModalContentEl.innerHTML = `
+        <section class="support-modal-section">
+          <h3>${theme.title}</h3>
+          <ul>
+            ${theme.items.map((item) => `<li>${item}</li>`).join("")}
+          </ul>
+        </section>
+      `;
+      supportModalEl.classList.add("open");
+      supportModalEl.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeSupportModal() {
+      supportModalEl.classList.remove("open");
+      supportModalEl.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      renderTimer();
     }
 
     function showResetOverlay(message) {
@@ -1074,7 +1309,7 @@
     function handleTemptation() {
       const response = pickRandom(temptationResponses, lastTemptationResponse);
       lastTemptationResponse = response;
-      openModal(response);
+      showWittyToast(response);
       showReaction(pickRandom(reactionPings));
     }
 
@@ -1099,10 +1334,15 @@
 
     resetBtn.addEventListener("click", resetToNow);
 
-    closeModalBtn.addEventListener("click", closeModal);
+    temptationButtons.forEach((button) => {
+      button.addEventListener("click", handleTemptation);
+    });
 
-    modalEl.addEventListener("click", (event) => {
-      if (event.target === modalEl) closeModal();
+    supportBtn.addEventListener("click", showSupportModal);
+    supportModalCloseBtn.addEventListener("click", closeSupportModal);
+
+    supportModalEl.addEventListener("click", (event) => {
+      if (event.target === supportModalEl) closeSupportModal();
     });
 
     resetOverlayEl.addEventListener("click", (event) => {
@@ -1112,13 +1352,9 @@
       }
     });
 
-    document.querySelectorAll(".temptation").forEach((button) => {
-      button.addEventListener("click", handleTemptation);
-    });
-
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") {
-        closeModal();
+      if (event.key === "Escape" && supportModalEl.classList.contains("open")) {
+        closeSupportModal();
       }
     });
 
